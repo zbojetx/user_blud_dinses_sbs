@@ -40,6 +40,7 @@ export default function Master(props) {
     const [dataUsers, setDataUsers] = useState([])
     const dispatch = useDispatch();
     const [login, setLogin] = useState(true)
+    const [tahun, setTahun] = useState('')
 
     useEffect(async () => {
         await isLoginFunc()
@@ -50,10 +51,12 @@ export default function Master(props) {
 
     const isLoginFunc = async () => {
         const loginDatas = await isLogin()
+        const year = await localStorage.getItem('tahun')
         console.log(loginDatas)
         if (loginDatas !== null) {
             setLogin(true)
             setDatas(loginDatas)
+            setTahun(year)
             setDataUsers(loginDatas.data[0])
         } else {
             setLogin(false)
@@ -90,7 +93,7 @@ export default function Master(props) {
                             </Menu.Item>
                             <Menu.Item key="2" onClick={() => browserHistory.push('/instansi')}>
                                 <ShopTwoTone twoToneColor="#05c46b" />
-                                <span>Profil Instansi</span>
+                                <span>Profil BLUD</span>
                             </Menu.Item>
                             <Menu.Item key="4" onClick={() => browserHistory.push('/pegawai')}>
                                 <CrownTwoTone twoToneColor="#546de5" />
@@ -152,10 +155,16 @@ export default function Master(props) {
                 </Sider>
                 <Layout className="site-layout">
                     <Header className="site-layout-background" style={{ padding: 0 }}>
-                        {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                        {/* {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
                             className: 'trigger',
                             onClick: toggle,
-                        })}
+                        })} */}
+                        <div style={{ paddingRight: 20, float: 'left' }}>
+                            <Button type="primary" onClick={logout} >{tahun}</Button>
+                        </div>
+                        <div style={{ paddingRight: 20, float: 'left' }}>
+                            <span style={{ fontWeight: 'bold', marginRight: 20 }}>Waktu mundur 12 hari 12 jam 12menit 14 detik</span>
+                        </div>
                         <div style={{ paddingRight: 20, float: 'right' }}>
                             <span style={{ fontWeight: 'bold', marginRight: 20 }}>{dataUsers.nama}</span><Button type="danger" onClick={logout} icon={<LogoutOutlined />}></Button>
                         </div>

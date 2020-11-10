@@ -4,6 +4,8 @@ import axios from 'axios'
 //const endpoint = 'http://api-superdina.e-superdina.com'
 const endpoint = 'http://localhost:6789'
 
+const year = new Date().getFullYear()
+
 
 // Reusable Function ======================================================
 
@@ -93,6 +95,7 @@ export async function login(datas) {
     .then(res => {
         if (res.data.kode === 1){
             localStorage.setItem('isLogin', JSON.stringify(res.data))
+            localStorage.setItem('tahun', year)
             status = 1
         }else{
             status = 2

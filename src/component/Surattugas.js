@@ -241,7 +241,7 @@ function Sppd() {
         setItem5('')
         const url = 'getkoderekeningakun'
         let datas = {
-            forselect: 'item_4',
+            forselect: 'item_5',
             payload: {
                 item_1,
                 item_2,
@@ -249,7 +249,9 @@ function Sppd() {
                 item_4: value
             }
         }
+        
         let kd = await getallpost(datas, url)
+        console.log(kd)
         setRincianListObjek(kd)
     }
 
