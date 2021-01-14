@@ -8,10 +8,15 @@ import {
     PrinterOutlined,
     DollarCircleOutlined,
     EditOutlined,
-    UserAddOutlined
+    UserAddOutlined,
+    StopOutlined,
+    BulbOutlined,
+    CalculatorOutlined,
+    ReloadOutlined,
+    SyncOutlined
 } from '@ant-design/icons';
 import 'antd/dist/antd.css';
-import { createupdate, getall, remove, getbyid } from '../api/api';
+import { createupdate, getall, remove, getbyid, getallpost } from '../api/api';
 import { Typography } from 'antd';
 import { Link, browserHistory } from 'react-router';
 import { isLogin } from '../reducer/LocalStoradge';
@@ -102,46 +107,24 @@ function Sppd() {
     const [modal, setModal] = useState(false)
     const [modalPrintSppd, setModalPrintSppd] = useState(false)
     const [modalPrintKwitansi, setModalPrintKwitansi] = useState(false)
-    const [modalPengikut, setModalPengikut] = useState(false)
-    const [listSppd, setListSppd] = useState([])
-    const [listPegawai, setListPegawai] = useState([])
+    const [modalPagu, setModalPagu] = useState(false)
+    const [listBlud, setListBlud] = useState([])
     const [id, setId] = useState('')
     const [isUpdate, setIsUpdate] = useState('')
 
-    const [nama_pegawai, setNamaPegawai] = useState('')
-    const [tanggal_berangkat, setTanggalBerangkat] = useState(moment().format("YYYY-MM-DD"))
-    const [tanggal_pulang, setTanggalPulang] = useState(moment().format("YYYY-MM-DD"))
-    const [peraturan_perjalanan, setPeraturanPerjalanan] = useState('')
-    const [nomor_surat, setNomorSurat] = useState('')
-    const [format_surat, setFormatSurat] = useState('')
-    const [provinsi, setProvinsi] = useState('')
-    const [kab_kota, setKabKota] = useState('')
-    const [kode_anggaran, setKodeAnggaran] = useState('')
-    const [maksud, setMaksud] = useState('')
-    const [dasar, setDasar] = useState('')
-    const [waktu, setWaktu] = useState('')
-    const [tempat_pertama, setTempatPertama] = useState('')
-    const [tempat_kedua, setTempatKedua] = useState('')
-    const [tempat_ketiga, setTempatKetiga] = useState('')
-    const [penanda_tangan, setPenandaTangan] = useState('')
-    const [penanda_tangan_keuangan, setPenandaTanganKeuangan] = useState('')
-    const [keterangan, setKeterangan] = useState('')
-    const [datee, setDate] = useState([])
-    const [pengikut, setPengikut] = useState('')
-    const [tanggaldikeluarkan, setTanggalDikeluarkan] = useState(moment().format("YYYY-MM-DD"))
+    const [id_blud, setIdBlud] = useState('')
+    const [kode_blud, setKodeBlud] = useState('')
+    const [tahun_anggaran, setTahunAnggaran] = useState('')
+    const [pagu, setPagu] = useState('')
 
-    const [listProvinsi, setListProvinsi] = useState([])
-    const [listKabKota, setListKabKota] = useState([])
-    const [listPengikut, setListPengikut] = useState([])
-    const [listFormatSurat, setListFormatSurat] = useState([])
+    const [listTahunAnggaran, setlistTahunAnggaran] = useState([])
+    const [listPagu, setListPagu] = useState([])
 
     const componentRef = useRef();
 
 
     useEffect(() => {
-        getsppd()
-        getprovinsi()
-        getpegawai()
+        getblud()
         attr()
     }, []);
 
@@ -151,71 +134,48 @@ function Sppd() {
         setModal(!modal)
     }
 
-    const modalTriggerPengikut = (id) => {
-        setId(id)
-        getPengikutById(id)
-        setModalPengikut(!modalPengikut)
+    const modalTriggerPagu = async (kode) => {
+        await setKodeBlud(kode)
+        await getPaguById(kode)
+        setModalPagu(!modalPagu)
+    }
+
+    const getblud = async () => {
+        const data = []
+        const url = 'getblud'
+        let blud = await getall(url)
+        let data_length = blud.length
+
+        for (let i = 0; i < data_length; i++) {
+            data.push({
+                no: i + 1,
+                id: blud[i].id,
+                nama_blud: blud[i].nama_blud,
+                kode_blud: blud[i].kode_blud,
+                nama_kepala_blud: blud[i].nama_kepala_blud,
+                status: blud[i].status,
+                status_input: blud[i].status_input,
+            })
+        }
+        setListBlud(data)
+    }
+
+    const getbludById = async (id) => {
+        setIdBlud(id)
+        const url = 'bludbyid'
+        let data = await getbyid(id, url)
+        //console.log(sppdbyid)
+        setKodeBlud(data[0].kode_blud)
+        modalTrigger()
     }
 
     const attr = async () => {
         const url = 'getattrbyjenis'
-        const jenis = 'Format'
+        const jenis = 'Tahun'
         let attrformat = await getbyid(jenis, url)
-        setListFormatSurat(attrformat)
+        setlistTahunAnggaran(attrformat)
     }
 
-    const getpegawai = async () => {
-        const data = []
-        const url = 'getpegawai'
-        let pegawai = await getall(url)
-        setListPegawai(pegawai)
-    }
-
-    const getSppdById = async (id) => {
-        const url = 'getsppdbyid'
-        let sppdbyid = await getbyid(id, url)
-        console.log(sppdbyid)
-        setId(id)
-        setNamaPegawai(sppdbyid[0].nama_pegawai)
-        setNomorSurat(sppdbyid[0].nomor_surat)
-        setTanggalBerangkat(sppdbyid[0].tanggal_berangkat)
-        setTanggalPulang(sppdbyid[0], tanggal_pulang)
-        setPeraturanPerjalanan(sppdbyid[0].peraturan_perjalanan)
-        setProvinsi(sppdbyid[0].provinsi)
-        setKabKota(sppdbyid[0].kab_kota)
-        setKodeAnggaran(sppdbyid[0].kode_anggaran)
-        setMaksud(sppdbyid[0].maksud)
-        setDasar(sppdbyid[0].dasar)
-        setWaktu(sppdbyid[0].waktu)
-        setTempatPertama(sppdbyid[0].tempat_pertama)
-        setTempatKedua(sppdbyid[0].tempat_kedua)
-        setTempatKetiga(sppdbyid[0].tempat_ketiga)
-        setPenandaTangan(sppdbyid[0].penanda_tangan)
-        setPenandaTanganKeuangan(sppdbyid[0].penanda_tangan_keuangan)
-        setKeterangan(sppdbyid[0].keterangan)
-        //setTanggalDikeluarkan(sppdbyid[0].tanggaldikeluarkan)
-        setIsUpdate(true)
-        setTanggalBerangkat(sppdbyid[0].tanggal_berangkat)
-        setTanggalPulang(sppdbyid[0].tanggal_pulang)
-        modalTrigger()
-        console.log(datee)
-    }
-
-    const getPengikutById = async (id) => {
-        let data = []
-        const url = 'getpengikutid'
-        let pengikutbyid = await getbyid(id, url)
-        let data_length = pengikutbyid.length
-        for (let i = 0; i < data_length; i++) {
-            data.push({
-                no: i + 1,
-                id: pengikutbyid[i].id,
-                nama_pegawai: pengikutbyid[i].pengikut,
-            })
-        }
-        setListPengikut(data)
-        //modalTriggerPengikut()
-    }
 
     const modalTriggerPrintSppd = async (id) => {
         await setId(id)
@@ -228,48 +188,8 @@ function Sppd() {
         setModalPrintKwitansi(!modalPrintKwitansi)
     }
 
-    const getsppd = async () => {
-        const data = []
-        const url = 'getsppd'
-        let sppd = await getall(url)
-        let data_length = sppd.length
-
-        for (let i = 0; i < data_length; i++) {
-            data.push({
-                no: i + 1,
-                id: sppd[i].id,
-                nama_pegawai: sppd[i].nama_pegawai,
-                prov: sppd[i].provinsi,
-                kabkota: sppd[i].kab_kota,
-                nomor_surat_tugas: sppd[i].nomor_surat_tugas,
-                format_surat_tugas: sppd[i].format_surat_tugas,
-                nomor_surat: sppd[i].nomor_surat,
-                format_surat: sppd[i].format_surat,
-                peraturan: sppd[i].peraturan_perjalanan,
-                tgl_berangkat: sppd[i].tanggal_berangkat,
-                tgl_pulang: sppd[i].tanggal_pulang,
-            })
-        }
-        setListSppd(data)
-
-    }
-
-    const getprovinsi = async () => {
-        const data = []
-        const url = 'getprovinsi'
-        let provinsi = await getall(url)
-        setListProvinsi(provinsi)
-
-    }
-
-    const getkabupatenkota = async (id) => {
-        const url = 'getkabkota'
-        let kabkota = await getbyid(id, url)
-        setListKabKota(kabkota)
-    }
-
-    const removesppd = async (id) => {
-        const url = 'deletesppd'
+    const removeblud = async (id) => {
+        const url = 'deleteblud'
         const hapus = await remove(id, url)
         console.log(hapus)
         if (hapus === 1) {
@@ -279,126 +199,20 @@ function Sppd() {
                     '',
                 icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
             });
-            getsppd()
+            getblud()
         }
     }
 
-    const create = async (req, res) => {
-        if (nomor_surat === '' || nama_pegawai === '') {
-            notification.open({
-                message: 'Gagal Menyimnpan',
-                description:
-                    'Form tidak boleh kosong',
-                icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
-            });
-        } else {
-            let datas = {
-                nama_pegawai,
-                tanggal_berangkat,
-                tanggal_pulang,
-                peraturan_perjalanan,
-                nomor_surat,
-                format_surat,
-                provinsi,
-                kab_kota,
-                kode_anggaran,
-                maksud,
-                dasar,
-                waktu,
-                tempat_pertama,
-                tempat_kedua,
-                tempat_ketiga,
-                penanda_tangan,
-                penanda_tangan_keuangan,
-                keterangan,
-                tanggaldikeluarkan,
-            }
-            const apiurl = 'createsppd'
-            console.log(apiurl)
-            let createpegawai = await createupdate(datas, apiurl)
-            if (createpegawai === 1) {
-                notification.open({
-                    message: 'Data Berhasil disimpan',
-                    description:
-                        '',
-                    icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
-                });
-                getsppd()
-                modalTrigger()
-                //resetForm()
-            } else {
-                notification.open({
-                    message: 'Gagal Menyimpan Data',
-                    description:
-                        '',
-                    icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
-                });
-            }
-        }
-    }
+
 
     const update = async (req, res) => {
-        if (nomor_surat === '' || nama_pegawai === '') {
-            notification.open({
-                message: 'Gagal Menyimnpan',
-                description:
-                    'Form tidak boleh kosong',
-                icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
-            });
-        } else {
-            let datas = {
-                id,
-                nama_pegawai,
-                tanggal_berangkat,
-                tanggal_pulang,
-                peraturan_perjalanan,
-                nomor_surat,
-                format_surat,
-                provinsi,
-                kab_kota,
-                kode_anggaran,
-                maksud,
-                dasar,
-                waktu,
-                tempat_pertama,
-                tempat_kedua,
-                tempat_ketiga,
-                penanda_tangan,
-                penanda_tangan_keuangan,
-                keterangan,
-                tanggaldikeluarkan
-            }
-            const apiurl = 'updatesppd'
-            console.log(apiurl)
-            let createpegawai = await createupdate(datas, apiurl)
-            if (createpegawai === 1) {
-                notification.open({
-                    message: 'Data Berhasil disimpan',
-                    description:
-                        '',
-                    icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
-                });
-                getsppd()
-                modalTrigger()
-                resetForm()
-            } else {
-                notification.open({
-                    message: 'Gagal Menyimpan Data',
-                    description:
-                        '',
-                    icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
-                });
-            }
-        }
-    }
-
-    const createPengikut = async (id) => {
-        let id_sppd = id
         let datas = {
-            id_sppd,
-            pengikut,
+            id: id_blud,
+            payload: {
+                kode_blud
+            },
         }
-        const apiurl = 'createpengikut'
+        const apiurl = 'updateblud'
         console.log(apiurl)
         let createpegawai = await createupdate(datas, apiurl)
         if (createpegawai === 1) {
@@ -408,8 +222,9 @@ function Sppd() {
                     '',
                 icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
             });
-            getPengikutById(id)
-            setPengikut('')
+            getblud()
+            modalTrigger()
+            //resetForm()
         } else {
             notification.open({
                 message: 'Gagal Menyimpan Data',
@@ -420,64 +235,152 @@ function Sppd() {
         }
     }
 
-    const removepengikut = async (idx) => {
-        const url = 'deletepengikut'
-        const hapus = await remove(idx, url)
-        console.log(hapus)
-        if (hapus === 1) {
+    const aktifblokir = async (data, data2) => {
+        console.log(data2)
+        let datas = {
+            id: data,
+            payload: {
+                status: data2
+            },
+        }
+        const apiurl = 'updateblud'
+        console.log(apiurl)
+        let update = await createupdate(datas, apiurl)
+        if (update === 1) {
             notification.open({
-                message: 'Data Berhasil dihapus',
+                message: 'Perubahan berhasil disimpan',
                 description:
                     '',
                 icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
             });
-            getPengikutById(id)
+            getblud()
+        } else {
+            notification.open({
+                message: 'Gagal Menyimpan Data',
+                description:
+                    '',
+                icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
+            });
         }
     }
 
-    const createorupdate = () => {
-        isUpdate ? update() : create()
+    const bukainput = async (data, data2) => {
+        console.log(data2)
+        let datas = {
+            id: data,
+            payload: {
+                status_input: data2
+            },
+        }
+        const apiurl = 'updateblud'
+        console.log(apiurl)
+        let update = await createupdate(datas, apiurl)
+        if (update === 1) {
+            notification.open({
+                message: 'Perubahan berhasil disimpan',
+                description:
+                    '',
+                icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
+            });
+            getblud()
+        } else {
+            notification.open({
+                message: 'Gagal Menyimpan Data',
+                description:
+                    '',
+                icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
+            });
+        }
     }
+
+    const createPagu = async (id) => {
+        let id_pagu = `${kode_blud}${tahun_anggaran}`
+        let realisasi = 0;
+        let datas = {
+            kode_blud,
+            id_pagu,
+            tahun_anggaran,
+            pagu,
+            realisasi,
+        }
+        const apiurl = 'createpagu'
+        console.log(apiurl)
+        let createpegawai = await createupdate(datas, apiurl)
+        if (createpegawai === 1) {
+            notification.open({
+                message: 'Data Berhasil disimpan',
+                description:
+                    '',
+                icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
+            });
+            getPaguById(kode_blud)
+        } else {
+            notification.open({
+                message: 'Gagal Menyimpan Data',
+                description:
+                    '',
+                icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
+            });
+        }
+    }
+
+    const getPaguById = async (kode) => {
+        let data = []
+        const url = 'pagubyid'
+        let pagu = await getbyid(kode, url)
+        let data_length = pagu.length
+        for (let i = 0; i < data_length; i++) {
+            data.push({
+                no: i + 1,
+                tahun_anggaran: pagu[i].tahun_anggaran,
+                pagu: pagu[i].pagu
+            })
+        }
+        setListPagu(data)
+        //modalTriggerPengikut()
+    }
+
+    // const removepengikut = async (idx) => {
+    //     const url = 'deletepengikut'
+    //     const hapus = await remove(idx, url)
+    //     console.log(hapus)
+    //     if (hapus === 1) {
+    //         notification.open({
+    //             message: 'Data Berhasil dihapus',
+    //             description:
+    //                 '',
+    //             icon: <CheckCircleOutlined style={{ color: '#00b894' }} />,
+    //         });
+    //         getPengikutById(id)
+    //     }
+    // }
+
 
     const createnew = async () => {
         modalTrigger()
         setIsUpdate(false)
-        resetForm()
+        //resetForm()
     }
 
-
-
-    const resetForm = () => {
-        setNamaPegawai('')
-        setNomorSurat('')
-        setTanggalBerangkat(Date.now())
-        setTanggalPulang(Date.now())
-        setPeraturanPerjalanan('')
-        setProvinsi('')
-        setKabKota('')
-        setKodeAnggaran('')
-        setMaksud('')
-        setDasar('')
-        setWaktu('')
-        setTempatPertama('')
-        setTempatKedua('')
-        setTempatKetiga('')
-        setPenandaTangan('')
-        setPenandaTanganKeuangan('')
-        setKeterangan('')
-        setTanggalDikeluarkan(Date.now())
-    }
-
-    const columnsPengikut = [
+    const columnsPagu = [
         {
             title: 'No',
             key: 'no',
             dataIndex: 'no',
         },
         {
-            title: 'Nama Pegawai',
-            key: 'nama_pegawai',
-            dataIndex: 'nama_pegawai'
+            title: 'Tahun Anggaran',
+            key: 'tahun_anggaran',
+            dataIndex: 'tahun_anggaran'
+        },
+        {
+            title: 'Besaran Pagu',
+            key: 'pagu',
+            render: (text, record) => (
+                <span>
+                  {record.pagu}
+                </span>
+            ),
         },
         {
             title: 'Action',
@@ -486,7 +389,7 @@ function Sppd() {
                 <span>
                     <Popconfirm
                         title="Anda yakin menghapus Data ini?"
-                        onConfirm={() => removepengikut(record.id)}
+                        //onConfirm={() => removepengikut(record.id)}
                         // onCancel={cancel}
                         okText="Yes"
                         cancelText="No"
@@ -505,121 +408,114 @@ function Sppd() {
             dataIndex: 'no',
         },
         {
-            title: 'Tanggal',
+            title: 'Nama Blud',
+            key: 'nama_blud',
+            dataIndex: 'nama_blud'
+        },
+        {
+            title: 'Kode Blud',
+            key: 'kode_blud',
+            dataIndex: 'kode_blud'
+        },
+        //
+        {
+            title: 'Nama Kepala',
+            key: 'nama_kepala_blud',
+            dataIndex: 'nama_kepala_blud'
+        },
+        {
+            title: '#',
             key: 'action',
             render: (text, record) => (
                 <span>
-                    {moment(record.tgl_berangkat).format('LL')} -  {moment(record.tgl_pulang).format('LL')}
-                </span>
-            ),
-        },
-        {
-            title: 'Nama Pegawai',
-            key: 'nama_pegawai',
-            dataIndex: 'nama_pegawai'
-        },
-        {
-            title: 'Nomor Surat Tugas',
-            key: 'action',
-            render: (text, record) => (
-                <span>
-                    {record.nomor_surat_tugas}/{record.format_surat_tugas}
-                </span>
-            ),
-        },
-        {
-            title: 'Nomor SPD',
-            key: 'action',
-            render: (text, record) => (
-                <span>
-                    {record.nomor_surat}/{record.format_surat}
-                </span>
-            ),
-        },
-        {
-            title: 'Action',
-            key: 'action',
-            render: (text, record) => (
-                <span>
-                    <Button key="edit" onClick={() => getSppdById(record.id)} style={{ marginLeft: 10 }} type="primary" icon={<EditOutlined />} ></Button>
-                    <Button key="edit" onClick={() => modalTriggerPengikut(record.id)} style={{ marginLeft: 10 }} type="primary" icon={<UserAddOutlined />} ></Button>
-                    <Button key="input" onClick={() => browserHistory.push({ pathname: '/rincian', state: { id: record.id, no_surat: text.nomor_surat } })} style={{ marginLeft: 10 }} type="primary" icon={<DollarCircleOutlined />} ></Button>
+                    <Button key="edit" onClick={() => getbludById(record.id)} style={{ marginLeft: 10 }} type="primary" icon={<EditOutlined />}>Kode</Button>
                     <Popconfirm
-                        title="Anda yakin menghapus Data ini?"
-                        onConfirm={() => removesppd(record.id)}
+                        title="Blokir akun BLUD ini?"
+                        onConfirm={() => aktifblokir(record.id, record.status === 1 ? '0' : '1')}
                         // onCancel={cancel}
                         okText="Yes"
                         cancelText="No"
                     >
-                        <Button key="hapus" style={{ marginLeft: 10 }} type="danger" icon={<DeleteOutlined />} ></Button>
+                    </Popconfirm>
+                    {(() => {
+                        if (record.status === '1') {
+                            return (<Popconfirm
+                                title="Aktifkan akun BLUD ini?"
+                                onConfirm={() => aktifblokir(record.id,'0')}
+                                // onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button key="hapus" style={{ marginLeft: 10 }} type="danger" icon={<StopOutlined />} >Blokir</Button>
+                            </Popconfirm>)
+                        } else {
+                            return (<Popconfirm
+                                title="Aktifkan akun BLUD ini?"
+                                onConfirm={() => aktifblokir(record.id,'1')}
+                                // onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button key="hapus" style={{ marginLeft: 10 }} type="primary" icon={<BulbOutlined />} >Aktifkan</Button>
+                            </Popconfirm>)
+                        }
+                    })()}
+                    <Popconfirm
+                        title="Anda yakin menghapus Data ini?"
+                        onConfirm={() => removeblud(record.id)}
+                        // onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button key="hapus" style={{ marginLeft: 10 }} type="danger" icon={<DeleteOutlined />} >Hapus</Button>
                     </Popconfirm>
                 </span>
             ),
         },
         {
-            title: 'Print',
+            title: 'Penganggaran',
             key: 'action',
             render: (text, record) => (
                 <span>
-                    <Button key="edit" onClick={() => modalTriggerPrintSppd(record.id)} style={{ marginLeft: 10 }} type="primary" icon={<PrinterOutlined />} >SPPD</Button>
-                    <Button key="input" onClick={() => modalTriggerPrintKwitansi(record.id)} style={{ marginLeft: 10 }} type="primary" icon={<PrinterOutlined />} >Kwitansi</Button>
+                    <Button key="inputpagu" onClick={() => modalTriggerPagu(record.kode_blud)} style={{ marginLeft: 10 }} type="primary" icon={<CalculatorOutlined />} >Input Pagu</Button>
+                    {(() => {
+                        if (record.status_input === '1') {
+                            return (<Popconfirm
+                                title="Nonaktifkan penginputan BLUD ini?"
+                                onConfirm={() => bukainput(record.id,'0')}
+                                // onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button key="hapus" style={{ marginLeft: 10 }} type="danger" icon={<StopOutlined />} >Tutup Input</Button>
+                            </Popconfirm>)
+                        } else {
+                            return (<Popconfirm
+                                title="Aktifkan penginputan BLUD ini?"
+                                onConfirm={() => bukainput(record.id,'1')}
+                                // onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button key="hapus" style={{ marginLeft: 10 }} type="primary" icon={<BulbOutlined />} >Buka Input</Button>
+                            </Popconfirm>)
+                        }
+                    })()}
                 </span>
             ),
         },
     ];
 
-    const onChangeTingkat = value => {
-        setPeraturanPerjalanan(value)
-        console.log(value)
-    }
 
-    const onChangeProvinsi = value => {
-        setProvinsi(value)
-        getkabupatenkota(value)
-        console.log(value)
-    }
 
-    const onChangeKabKota = value => {
-        setKabKota(value)
-    }
-
-    const onChangeDate = (value, string) => {
-        console.log(string)
-        setTanggalBerangkat(string[0])
-        setTanggalPulang(string[1])
-    }
-
-    const onChangeTanggalDikeluarkan = (value, string) => {
-        console.log(string)
-        setTanggalDikeluarkan(string)
-        // setTanggalBerangkat(string[0])
-        // setTanggalPulang(string[1])
-    }
-
-    const onChangePegawai = value => {
-        setNamaPegawai(value)
-    }
-
-    const onChangePenandatangan = value => {
-        setPenandaTangan(value)
-    }
-
-    const onChangePenandatanganKeuangan = value => {
-        setPenandaTanganKeuangan(value)
-    }
-
-    const onChangePengikut = value => {
-        setPengikut(value)
-    }
-
-    const onChangeFormatSurat = value => {
-        setFormatSurat(value)
+    const onChangeTahunAnggaran = value => {
+        setTahunAnggaran(value)
     }
 
     const dateFormat = 'YYYY-MM-DD';
     return (
         <Content
-            className="site-layout-background"
+            //className="site-layout-background"
             style={{
                 margin: '24px 16px',
                 padding: 24,
@@ -628,200 +524,27 @@ function Sppd() {
         >
 
             <Card
-                title="Surat Perintah Perjalanan Dinas (SPPD)"
+                title="Data Master BLUD"
                 //extra={<Button type="dashed" onClick={() => browserHistory.push('/addpegawai')}>Tambah Pegawai </Button>}
-                extra={<Button type="dashed" onClick={createnew}>Buat SPPD </Button>}
-                style={{ width: '100%', borderWidth: 0 }}
+                extra={<Button type="dashed" onClick={createnew} icon={<SyncOutlined />}></Button>}
+                style={{ width: '100%', borderWidth: 0, marginBottom: 20 }}
                 headStyle={{ color: 'white', backgroundColor: '#0984e3', fontWeight: 'bold', fontSize: 20 }}
             />
 
-            <Table columns={columns} dataSource={listSppd} />
+            <Table columns={columns} dataSource={listBlud} />
 
             <Modal
-                title="Buat SPPD"
+                title="Kode BLUD"
                 centered
                 visible={modal}
-                onOk={createorupdate}
+                onOk={update}
                 onCancel={modalTrigger}
-                width={1000}
+            //width={1000}
             >
-                <InputBoxAbove style={{ backgroundColor: '#f7d794' }}>
-                    <Label>Data Pegawai</Label>
-                </InputBoxAbove>
-                <InputBoxCenter>
-                    <Label>Nama Pegawai</Label>
-                    <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="Select a person"
-                        optionFilterProp="children"
-                        style={{ width: '100%', borderWidth: 0 }}
-                        onChange={onChangePegawai}
-                        value={nama_pegawai}
-                    >
-                        {listPegawai.map((data, index) =>
-                            <Option value={data.nama_pegawai}>{data.nip} - {data.nama_pegawai}</Option>
-                        )}
-                    </Select>
-                </InputBoxCenter>
-                <InputBoxCenter style={{ backgroundColor: '#f7d794' }}>
-                    <Label>Data Administrasi</Label>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Row style={{ width: "100%" }}>
-                        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-                            <Label>Nomor Surat</Label>
-                            <Inputx placeholder="Nomor Surat" value={nomor_surat} onChange={e => setNomorSurat(e.target.value)} />
-                        </Col>
-                        <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-                            <Label>Penomoran</Label>
-                            <Select
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Pilih Provinsi"
-                                optionFilterProp="children"
-                                onChange={onChangeFormatSurat}
-                                value={format_surat}
-                            >
-                                {listFormatSurat.map((data, index) =>
-                                    <Option value={data.nama_attr}>{data.nama_attr}</Option>
-                                )}
-                            </Select>
-                        </Col>
-                    </Row>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Tanggal Berangkat - Tanggal Pulang</Label>
-                    <RangePicker
-                        //defaultValue={[tanggal_berangkat, tanggal_pulang]}
-                        defaultValue={[moment(tanggal_berangkat, dateFormat), moment(tanggal_pulang, dateFormat)]}
-                        style={{ width: '100%', borderWidth: 0 }}
-                        onChange={onChangeDate}
-                    />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Tingkat menurut peraturan perjalanan</Label>
-                    <Select
-                        showSearch
-                        placeholder="Tingkat menurut peraturan perjalanan"
-                        optionFilterProp="children"
-                        style={{ width: '100%', borderWidth: 0 }}
-                        onChange={onChangeTingkat}
-                        value={peraturan_perjalanan}
-                    >
-                        <Option value="Perjalanan Dinas Dalam Daerah">Perjalanan Dinas Dalam Daerah</Option>
-                        <Option value="Perjalanan Dinas Luar Daerah">Perjalanan Dinas Luar Daerah</Option>
-                        <Option value="Perjalanan Dinas Luar Negeri">Perjalanan Dinas Luar Negeri</Option>
-                    </Select>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Provinsi Tujuan</Label>
-                    <Select
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Pilih Provinsi"
-                        optionFilterProp="children"
-                        onChange={onChangeProvinsi}
-                        value={provinsi}
-                    >
-                        {listProvinsi.map((data, index) =>
-                            <Option value={data.id}>{data.nama}</Option>
-                        )}
-                    </Select>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Kota Tujuan</Label>
-                    <Select
-                        showSearch
-                        style={{ width: '100%' }}
-                        placeholder="Pilih Kabupaten Kota"
-                        optionFilterProp="children"
-                        onChange={onChangeKabKota}
-                        value={kab_kota}
-                    >
-                        {listKabKota.map((data, index) =>
-                            <Option value={data.id}>{data.nama}</Option>
-                        )}
-                    </Select>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Kode Anggaran</Label>
-                    <Inputx placeholder="Kode Anggaran" value={kode_anggaran} onChange={e => setKodeAnggaran(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Maksud Perjalanan Dinas</Label>
-                    <TextArea rows={3} value={maksud} onChange={e => setMaksud(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Dasar Perjalanan Dinas</Label>
-                    <TextArea rows={3} value={dasar} onChange={e => setDasar(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Waktu</Label>
-                    <Inputx placeholder="Waktu" value={waktu} onChange={e => setWaktu(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Tempat Pertama</Label>
-                    <TextArea rows={3} value={tempat_pertama} onChange={e => setTempatPertama(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Tempat Kedua</Label>
-                    <TextArea rows={3} value={tempat_kedua} onChange={e => setTempatKedua(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Tempat Ketiga</Label>
-                    <TextArea rows={3} value={tempat_ketiga} onChange={e => setTempatKetiga(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Keterangan lainnya</Label>
-                    <TextArea rows={3} value={keterangan} onChange={e => setKeterangan(e.target.value)} />
-                </InputBoxCenter>
-                <InputBoxCenter style={{ backgroundColor: '#f7d794' }}>
-                    <Label>Pengesahan</Label>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Dikeluarkan pada tanggal</Label>
-                    <DatePicker
-                        //defaultValue={[moment(tanggaldikeluarkan, dateFormat)]}
-                        onChange={onChangeTanggalDikeluarkan}
-                        style={{ width: '100%', borderWidth: 0 }}
-                    />
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Penandatangan</Label>
-                    <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="Select a person"
-                        optionFilterProp="children"
-                        style={{ width: '100%', borderWidth: 0 }}
-                        onChange={onChangePenandatangan}
-                        value={penanda_tangan}
-                    >
-                        {listPegawai.map((data, index) =>
-                            <Option value={data.id}>{data.nip} - {data.nama_pegawai}</Option>
-                        )}
-                    </Select>
-                </InputBoxCenter>
-                <InputBoxCenter style={{ backgroundColor: '#f7d794' }}>
-                    <Label>Pengesahan Perbendaharaan</Label>
-                </InputBoxCenter>
-                <InputBoxCenter>
-                    <Label>Penandatangan Keuanagn</Label>
-                    <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="Select a person"
-                        optionFilterProp="children"
-                        style={{ width: '100%', borderWidth: 0 }}
-                        onChange={onChangePenandatanganKeuangan}
-                        value={penanda_tangan_keuangan}
-                    >
-                        {listPegawai.map((data, index) =>
-                            <Option value={data.id}>{data.nip} - {data.nama_pegawai}</Option>
-                        )}
-                    </Select>
-                </InputBoxCenter>
+
+                <Label>Kode BLUD</Label>
+                <Input placeholder="Kode Blud" value={kode_blud} onChange={e => setKodeBlud(e.target.value)} />
+
             </Modal>
 
             {/* Modal Print SPPD */}
@@ -833,7 +556,7 @@ function Sppd() {
                 //onOk={createorupdate}
                 onCancel={modalTriggerPrintSppd}
                 footer={null}
-                width={1000}
+            //width={1000}
             >
                 <ComponentToPrint
                     key={id}
@@ -871,39 +594,43 @@ function Sppd() {
             {/* Modal Pengikut */}
 
             <Modal
-                title="Tambah Pengikut"
+                title="Input Pagu"
                 centered
-                visible={modalPengikut}
-                onOk={() => createPengikut(id)}
-                onCancel={modalTriggerPengikut}
+                visible={modalPagu}
+                //onOk={() => createPengikut(id)}
+                onCancel={modalTriggerPagu}
                 width={1000}
                 footer={null}
             >
-                <Form form={form} name="horizontal_login" layout="inline" onFinish={() => createPengikut(id)} style={{ backgroundColor: '#0984e3', padding: 20, }}>
-                    <Row style={{ width: '100%', marginBottom: 5, backgroundColor: '#0984e3' }} >
-                        <Col xs={2} sm={4} md={6} lg={4} xl={4}>
-                            <Form.Item
-                                name="satuan"
-                                rules={[{ required: true, message: 'kosong' }]}
-                            >
+
+                    <Row style={{ width: '100%', marginBottom: 20, backgroundColor: '#0984e3' }} >
+                        <Col xs={24} sm={24} md={6} lg={12} xl={12} style={{ padding: 10 }}>
+                            <Label style={{ color: 'white' }}>Tahun Anggaran</Label>
                                 <Select
                                     showSearch
                                     style={{ width: 200 }}
                                     placeholder="Select a person"
                                     optionFilterProp="children"
                                     style={{ width: '100%', borderWidth: 0 }}
-                                    onChange={onChangePengikut}
-                                    value={pengikut}
+                                    onChange={onChangeTahunAnggaran}
                                 >
-                                    {listPegawai.map((data, index) =>
-                                        <Option value={data.nama_pegawai}>{data.nip} - {data.nama_pegawai}</Option>
+                                    <Option value="">Tahun Anggaran</Option>
+                                    {listTahunAnggaran.map((data, index) =>
+                                        <Option value={data.nama_attr}>{data.nama_attr}</Option>
                                     )}
                                 </Select>
-                            </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={6} lg={12} xl={12} style={{ padding: 10 }}>
+                            <Label style={{ color: 'white' }}>Besaran Pagu</Label>
+                                <Input onChange={e => setPagu(e.target.value)}  />
+                        </Col>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{ padding: 10 }}>
+                           <Button block type="primary" onClick={createPagu}> Simpan</Button>
                         </Col>
                     </Row>
-                </Form>
-                <Table columns={columnsPengikut} dataSource={listPengikut} />
+
+
+                <Table columns={columnsPagu} dataSource={listPagu} />
             </Modal>
 
         </Content>

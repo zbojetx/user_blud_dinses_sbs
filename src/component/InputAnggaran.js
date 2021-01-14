@@ -37,6 +37,7 @@ import {
     get_rekening
 } from './../api/api';
 import { Link, browserHistory } from 'react-router';
+import { useSelected } from 'slate-react';
 
 const { Header, Sider, Content } = Layout;
 const { Option } = Select;
@@ -55,11 +56,17 @@ function InputAnggaran() {
     const [rincianObjek, setRincianObjek] = useState(null)
     const [subRincianObjekList, setSubRincianObjekList] = useState([])
     const [subRincianObjek, setSubRincianObjek] = useState(null)
+    const [program, setProgram] = useState('')
+    const [kegiatan, setKegiatan] = useState('')
+    const [sumberDana, setSumberDana] = useState('')
 
     const [puskesmass, setPuskesmas] = useState('')
     const [sumberdana, setSumberDana] = useState('')
     const [nilarekening, setNilaiRekening] = useState('')
     const [listRekening, setListRekening] = useState([])
+    const [listProgram, setLisProgram] = useState([])
+    const [listKegiatan, setListKegiatan] = useState([])
+    const [listSumberDana, setListSumberDana] = useState([])
     const counter = useSelector(state => state.counter)
 
     const params = {
@@ -70,38 +77,6 @@ function InputAnggaran() {
         "rincian_objek": null,
         "sub_rincian_objek": null
     }
-
-    const puskesmas = [
-        {
-            "nama_puskesmas": "Puskesmas Selakau",
-            "nama_kepala_puskesmas": "dr. Ahmad Dhani"
-        },
-        {
-            "nama_puskesmas": "Puskesmas Sambas",
-            "nama_kepala_puskesmas": "dr. Boyke"
-        },
-        {
-            "nama_puskesmas": "Puskesmas Tebas",
-            "nama_kepala_puskesmas": "dr. Suratman"
-        },
-        {
-            "nama_puskesmas": "Puskesmas Pemangkat",
-            "nama_kepala_puskesmas": "dr. Saiful"
-        },
-        {
-            "nama_puskesmas": "Puskesmas Temajuk",
-            "nama_kepala_puskesmas": "dr. Rustam"
-        },
-    ]
-
-    const sumber_dana = [
-        {
-            "sumber_dana": "BLUD"
-        },
-        {
-            "sumber_dana": "PAD"
-        },
-    ]
 
     useEffect(() => {
         getAkunList()
@@ -350,7 +325,7 @@ function InputAnggaran() {
                 subTitle="Konsumen Page Content Here"
                 extra={[
                     <Button key="1" onClick={showModalMainTrig}>
-                        Tambah Rekening
+                        Input Anggaran
                     </Button>,
                 ]}
             />

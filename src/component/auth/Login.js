@@ -110,6 +110,7 @@ const App = () => {
     const counter = useSelector(state => state.counter);
     const dispatch = useDispatch();
 
+
     useEffect(() => {
         //localStorage.clear();
         const savedDatas = localStorage.getItem('isLogin')
@@ -117,7 +118,7 @@ const App = () => {
         console.log(`save data ${savedDatas}`)
         if (savedDatas !== null && savedDatas.accessToken !== null) {
             dispatch({ type: "SAVEDATAS" })
-            browserHistory.push('/instansi')
+            browserHistory.push('/dashboard')
         } else {
             console.log('null')
         }
@@ -136,9 +137,10 @@ const App = () => {
                 username,
                 password
             }
-            const cek = await login(datas)
+            const url = "loginadmin"
+            const cek = await login(datas, url)
             if (cek === 1) {
-                browserHistory.push('/instansi')
+                browserHistory.push('/dashboard')
                 const savedDatas = JSON.parse(localStorage.getItem('isLogin'))
                 console.log(savedDatas)
             } else {
@@ -166,12 +168,12 @@ const App = () => {
                 <Col xs={24} sm={24} md={24} lg={6} xl={6} style={{ padding: 20, margin: 'auto', height: '100%' }}>
                     <Row style={{ justifyContent: 'center', marginTop: 130}}>
                         <Col style={{ padding: 10,  justifyContent: 'center' }}>
-                            <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Logo_BPN-KemenATR_%282017%29.png/779px-Logo_BPN-KemenATR_%282017%29.png' style={{ width: 90 }} />
+                            <img src='https://www.kla.id/wp-content/uploads/2018/03/LOGO-KABUPATEN-SAMBAS.png' style={{ width: 90 }} />
                         </Col>
                     </Row>
                     <Row style={{ justifyContent: 'center', fontSize: 25 }}>
                         <Col style={{ padding: 10 }}>
-                            <Title>e-superdina</Title>
+                            <Title>Administrator</Title>
                         </Col>
                     </Row>
                     {/* <Row style={{ justifyContent: 'center', alignItems: 'center'}}>

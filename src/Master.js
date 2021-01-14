@@ -40,6 +40,7 @@ export default function Master(props) {
     const [dataUsers, setDataUsers] = useState([])
     const dispatch = useDispatch();
     const [login, setLogin] = useState(true)
+    const [tahun, setTahun] = useState('')
 
     useEffect(async () => {
         await isLoginFunc()
@@ -50,10 +51,12 @@ export default function Master(props) {
 
     const isLoginFunc = async () => {
         const loginDatas = await isLogin()
+        const year = await localStorage.getItem('tahun')
         console.log(loginDatas)
         if (loginDatas !== null) {
             setLogin(true)
             setDatas(loginDatas)
+            setTahun(year)
             setDataUsers(loginDatas.data[0])
         } else {
             setLogin(false)
@@ -81,20 +84,16 @@ export default function Master(props) {
 
             <Layout style={{ height: '100%' }}>
                 <Sider trigger={null} collapsible collapsed={collapsed} style={{ backgroundColor: 'white' }}>
-                    <div className="logo" style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>e-superdina</div>
-                    {dataUsers.akses === 'admin' && (
+                    <div className="logo" style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}></div>
+                    {dataUsers.akses === 'blud' && (
                         <Menu mode="inline" defaultSelectedKeys={['1']}>
-                            <Menu.Item key="1" onClick={() => browserHistory.push('/dashboard')} >
+                            {/* <Menu.Item key="1" onClick={() => browserHistory.push('/dashboard')} >
                                 <DashboardTwoTone twoToneColor="#eb2f96" />
                                 <span>Dashboard</span>
-                            </Menu.Item>
-                            <Menu.Item key="2" onClick={() => browserHistory.push('/instansi')}>
+                            </Menu.Item> */}
+                            <Menu.Item key="2" onClick={() => browserHistory.push(`${process.env.PUBLIC_URL}/blud`)}>
                                 <ShopTwoTone twoToneColor="#05c46b" />
-                                <span>Profil Instansi</span>
-                            </Menu.Item>
-                            <Menu.Item key="4" onClick={() => browserHistory.push('/pegawai')}>
-                                <CrownTwoTone twoToneColor="#546de5" />
-                                <span>Kode Rekening</span>
+                                <span>Profil BLUD</span>
                             </Menu.Item>
                             <SubMenu key="anggaranmurni"
                                 title={
@@ -103,62 +102,67 @@ export default function Master(props) {
                                         <span>Anggaran Murni</span>
                                     </span>
                                 }>
-                                <Menu.Item key="7" onClick={() => browserHistory.push('/surattugas')}>
+                                <Menu.Item key="7" onClick={() => browserHistory.push(`${process.env.PUBLIC_URL}/inputmurni`)}>
                                     <span>Input</span>
                                 </Menu.Item>
-                                <Menu.Item key="8" onClick={() => browserHistory.push('/sppd')}>
+                                {/* <Menu.Item key="8">
                                     <span>Cetak</span>
-                                </Menu.Item>
+                                </Menu.Item> */}
                             </SubMenu>
-                            <SubMenu key="stppd"
+                            <SubMenu key="anggaranpergeseran"
                                 title={
                                     <span>
                                         <SnippetsTwoTone twoToneColor="#f0932b" />
-                                        <span>Surat Tugas & SPPD</span>
+                                        <span>Anggaran Pergeseran</span>
                                     </span>
                                 }>
-                                <Menu.Item key="7" onClick={() => browserHistory.push('/surattugas')}>
-                                    <span>Surat Tugas</span>
+                                {/* <Menu.Item key="7" onClick={() => browserHistory.push('/inputmurni')}>
+                                    <span>Input</span>
                                 </Menu.Item>
-                                <Menu.Item key="8" onClick={() => browserHistory.push('/sppd')}>
-                                    <span>SPPD</span>
-                                </Menu.Item>
+                                <Menu.Item key="8">
+                                    <span>Cetak</span>
+                                </Menu.Item> */}
                             </SubMenu>
-                            <SubMenu key="appd"
+                            <SubMenu key="anggaranperubahan"
                                 title={
                                     <span>
-                                        <DatabaseTwoTone twoToneColor="#574b90" />
-                                        <span>Master Data</span>
+                                        <SnippetsTwoTone twoToneColor="#f0932b" />
+                                        <span>Anggaran Perubahan</span>
                                     </span>
                                 }>
-                                <Menu.Item key="6" onClick={() => browserHistory.push('/attr')}>
-                                    <span>Data Pendukung</span>
+                                {/* <Menu.Item key="7" onClick={() => browserHistory.push('/inputmurni')}>
+                                    <span>Input</span>
                                 </Menu.Item>
+                                <Menu.Item key="8">
+                                    <span>Cetak</span>
+                                </Menu.Item> */}
                             </SubMenu>
-                            {/* <SubMenu icon={<AppstoreOutlined />} title="Master Data" >
-                                <Menu.Item> <HeartOutlined /> Puskesmas</Menu.Item>
-                                <Menu.Item> <UserAddOutlined /> Administrator</Menu.Item>
-                            </SubMenu> */}
-                            <Menu.Item key="9" onClick={() => browserHistory.push('/administrator')} >
-                                <UserAddOutlined />
-                                <span>Administrator</span>
-                            </Menu.Item>
                         </Menu>
-                    )
-                    }
+                    )}
 
 
 
                 </Sider>
                 <Layout className="site-layout">
                     <Header className="site-layout-background" style={{ padding: 0 }}>
-                        {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                        {/* {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
                             className: 'trigger',
                             onClick: toggle,
-                        })}
-                        <div style={{ paddingRight: 20, float: 'right' }}>
-                            <span style={{ fontWeight: 'bold', marginRight: 20 }}>{dataUsers.nama}</span><Button type="danger" onClick={logout} icon={<LogoutOutlined />}></Button>
+                        })} */}
+                        <div style={{ paddingRight: 20, float: 'left' }}>
+                            <Button type="primary" >{tahun}</Button>
                         </div>
+                        {dataUsers.akses === 'blud' &&
+                            <div style={{ paddingRight: 20, float: 'right' }}>
+                                <span style={{ fontWeight: 'bold', marginRight: 20 }}>{dataUsers.nama_blud}</span><Button type="danger" onClick={logout} icon={<LogoutOutlined />}></Button>
+                            </div>
+                        }
+                          {dataUsers.akses === 'admin' &&
+                            <div style={{ paddingRight: 20, float: 'right' }}>
+                                <span style={{ fontWeight: 'bold', marginRight: 20 }}>{dataUsers.nama}</span><Button type="danger" onClick={logout} icon={<LogoutOutlined />}></Button>
+                            </div>
+                        }
+
                     </Header>
                     {props.children}
                 </Layout>

@@ -1,6 +1,6 @@
 {
   "name": "ordersystemcontroller",
-  "proxy": "http://192.168.100.96/",
+  "homepage": "https://blud.dinartech.com/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

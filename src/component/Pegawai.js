@@ -103,7 +103,7 @@ function Pelayanan() {
     const [item_4, setItem4] = useState('')
     const [item_5, setItem5] = useState('')
     const [judul, setJudul] = useState('')
-
+    const [id_kode_rekening, setIdKodeRekening] = useState('')
     const [listKodeRekening, setListKodeRekening] = useState([])
 
 
@@ -176,7 +176,9 @@ function Pelayanan() {
     }
 
     const create = async () => {
+        let idkoderek = `${item_1}${item_2}${item_3}${item_4}${item_5}`
         let datas = {
+            id_kode_rekening : idkoderek,
             item_1,
             item_2,
             item_3,

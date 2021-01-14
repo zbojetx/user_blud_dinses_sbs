@@ -1,8 +1,10 @@
 import React from 'react'
 import axios from 'axios'
 
-//const endpoint = 'http://api-superdina.e-superdina.com'
+//const endpoint = 'https://api-blud.dinartech.com'
 const endpoint = 'http://localhost:6789'
+
+const year = new Date().getFullYear()
 
 
 // Reusable Function ======================================================
@@ -16,8 +18,10 @@ export async function createupdate(datas, URL) {
     })
     .then(res => {
         if (res.data.kode === 1){
+            console.log(res.data)
             status = 1
         }else{
+            console.log(res.data)
             status = 2
         }
     })
@@ -82,17 +86,19 @@ export async function remove(id, URL){
 
 //Authentication =============================================================
 
-export async function login(datas) {
+export async function login(datas, url) {
     console.log("6789")
     let status = 0
+    console.log(datas.tahun_anggaran)
     await axios
-    .post(`${endpoint}/login`,{
+    .post(`${endpoint}/${url}`,{
         username : datas.username,
         password : datas.password
     })
     .then(res => {
         if (res.data.kode === 1){
             localStorage.setItem('isLogin', JSON.stringify(res.data))
+            localStorage.setItem('tahun', datas.tahun_anggaran)
             status = 1
         }else{
             status = 2
