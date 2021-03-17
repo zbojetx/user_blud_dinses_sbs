@@ -36,7 +36,8 @@ export class ComponentToPrint extends React.Component {
             anggaran: [],
             rincian: [],
             kepala: [],
-            verifikator: []
+            verifikator: [],
+            ext: []
         };
 
     }
@@ -47,7 +48,6 @@ export class ComponentToPrint extends React.Component {
     }
 
     async getDataForPrint() {
-        console.log("FOR PRINT")
         const url = 'datastoprint'
         let datas = {
             kode_blud: this.props.dataToPrint.kode_blud,
@@ -66,13 +66,14 @@ export class ComponentToPrint extends React.Component {
             anggaran: datatoprint.anggaran,
             rincian: datatoprint.rincian,
             kepala: datatoprint.kepaladinas[0],
+            ext: datatoprint.other[0],
             verifikator: datatoprint.verifikator
         })
     }
 
 
     render() {
-        const { blud, program, kegiatan, anggaran, rincian, kepala, verifikator } = this.state
+        const { blud, program, kegiatan, anggaran, rincian, kepala, verifikator, ext } = this.state
         return (
             <table style={{ width: '100%', fontSize: 12, color: 'black' }}>
                 <table style={{ width: '100%', marginBottom: 10 }}>
@@ -88,12 +89,12 @@ export class ComponentToPrint extends React.Component {
                     </tbody>
                 </table>
                 <hr style={{ borderWidth: 1, borderColor: 'black', marginBottom: 10 }} />
-                <table style={{ width: '100%', marginBottom: 20, borderBottom: '1px solid black', fontSize: 12,}}>
+                <table style={{ width: '100%', marginBottom: 20, borderBottom: '1px solid black', fontSize: 12, }}>
                     <tr>
-                        <td style={{ fontFamily: 'Bookman Old Style',width: '15%' }}>BLUD</td>
-                        <td style={{ fontFamily: 'Bookman Old Style',width: '1%' }}>:</td>
-                        <td style={{ fontFamily: 'Bookman Old Style',width: '20%' }}>{blud.kode_blud}</td>
-                        <td style={{ fontFamily: 'Bookman Old Style',width: '69%' }}>{blud.nama_blud}</td>
+                        <td style={{ fontFamily: 'Bookman Old Style', width: '15%' }}>BLUD</td>
+                        <td style={{ fontFamily: 'Bookman Old Style', width: '1%' }}>:</td>
+                        <td style={{ fontFamily: 'Bookman Old Style', width: '20%' }}>{blud.kode_blud}</td>
+                        <td style={{ fontFamily: 'Bookman Old Style', width: '69%' }}>{blud.nama_blud}</td>
                     </tr>
                     <tr>
                         <td>Pogram</td>
@@ -116,7 +117,7 @@ export class ComponentToPrint extends React.Component {
                     <tr>
                         <td>Sumber Dana</td>
                         <td>:</td>
-                        <td></td>
+                        <td>{ext.sumber_dana}</td>
                         <td></td>
                     </tr>
                 </table>
@@ -173,7 +174,7 @@ export class ComponentToPrint extends React.Component {
                         </tr>
 
                     </thead>
-                    <tbody className="table1" style={{borderBottom: '1px solid black',}}>
+                    <tbody className="table1" style={{ borderBottom: '1px solid black', }}>
                         {rincian.map((data, index) =>
                             < >
                                 <tr style={{ width: '100%' }}>
@@ -201,12 +202,16 @@ export class ComponentToPrint extends React.Component {
                     <tfoot style={{ width: '100%', borderTop: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
                         <tr>
                             <td colSpan={5}><center><b>JUMLAH</b></center></td>
-                            <td style={{ textAlign: 'right' }}></td>
+                            <td style={{ textAlign: 'right' }}><NumberFormat thousandSeparator={true} displayType={'text'} value={ext.total} /></td>
                         </tr>
                     </tfoot>
                 </table>
 
                 <table style={{ width: '100%', marginTop: 20, textAlign: 'center' }}>
+                    <tr>
+                        <td></td>
+                        <td>Sambas,  {moment(ext.tanggaldikeluarkan).format('LL')} </td>
+                    </tr>
                     <tr>
                         <td>{kepala.jabatan}</td>
                         <td>Kepala {blud.nama_blud}</td>
@@ -232,7 +237,7 @@ export class ComponentToPrint extends React.Component {
                         <td>NIP. {blud.nip_kepala_blud}</td>
                     </tr>
                 </table>
-                                    <div style={{ padding: 10, marginTop: 30 }}>
+                <div style={{ padding: 10, marginTop: 30 }}>
                     <p style={{ fontSize: 12 }}>
                         Keterangan <br />
                         Tanggal pembahasan :  <br />

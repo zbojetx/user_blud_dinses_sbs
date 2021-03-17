@@ -125,6 +125,7 @@ function Sppd() {
     const [kode_program, setProgram] = useState('')
     const [kode_kegiatan, setKegiatan] = useState('')
     const [sumber_dana, setSumberDana] = useState('')
+    const [tanggaldikeluarkan, setTanggalDikeluarkan] = useState(moment().format("YYYY-MM-DD"))
 
     const [pagu, setPagu] = useState('')
     const [realisasi, setRealisasi] = useState('')
@@ -148,7 +149,7 @@ function Sppd() {
         kode_blud,
         kode_program,
         kode_kegiatan,
-        tahun_anggaran : localStorage.getItem('tahun')
+        tahun_anggaran: localStorage.getItem('tahun')
     }
 
     useEffect(() => {
@@ -190,7 +191,7 @@ function Sppd() {
         setModalPrintRBA(!modalPrintRBA)
     }
 
-    const anggaranByProgram  = async(blud, kodeprog, kodekeg) => {
+    const anggaranByProgram = async (blud, kodeprog, kodekeg) => {
         console.log(blud)
         console.log(kodeprog)
         console.log(kodekeg)
@@ -200,10 +201,10 @@ function Sppd() {
         setModalAnggaran(!modalAnggaran)
     }
 
-    const paramforptint = async(blud, kodeprog, kodekeg) => {
+    const paramforptint = async (blud, kodeprog, kodekeg) => {
         setKodeBlud(blud)
         setProgram(kodeprog)
-        setKegiatan(kodekeg)    
+        setKegiatan(kodekeg)
         modalTriggerPrintRBA()
     }
 
@@ -219,7 +220,7 @@ function Sppd() {
         }
         const url = 'getanggaranbyblud'
         let anggaran = await getallpost(datas, url)
-        
+
         console.log(anggaran)
         let data_length = anggaran.anggaran.length
 
@@ -243,7 +244,6 @@ function Sppd() {
         //modalTriggerPelaksana()
     }
 
-   
     const getProgramAnggaranbyBlud = async (kode, tahun) => {
         let data = []
         const datas = {
@@ -255,21 +255,20 @@ function Sppd() {
         console.log("BLUD ANGGARAN")
         console.log(anggaran)
         let data_length = anggaran.anggaran.length
-      
-        if(anggaran.pagu.length === 0){
+
+        if (anggaran.pagu.length === 0) {
             setPagu("Admin belum menginput pagu")
-        }else{
+        } else {
             setPagu(anggaran.pagu[0].pagu)
             setRealisasi(anggaran.realisasi[0].total)
-            setRealisasiPersen((parseInt(anggaran.realisasi[0].total)/parseInt(anggaran.pagu[0].pagu))*100)
+            setRealisasiPersen((parseInt(anggaran.realisasi[0].total) / parseInt(anggaran.pagu[0].pagu)) * 100)
         }
         // if(anggaran.pagu[0].length !== 0 ){
         //     setPagu(anggaran.pagu[0].pagu)
         // }else{
         //     setPagu("Admin belum menginput pagu")
         // }
-       
-       
+        
         for (let i = 0; i < data_length; i++) {
             data.push({
                 no: i + 1,
@@ -327,7 +326,6 @@ function Sppd() {
             });
             getAnggaranbyBlud(kode_blud, localStorage.getItem('tahun'), kode_program, kode_kegiatan)
             resetForm()
-            //setPelaksana('')
         } else {
             notification.open({
                 message: 'Gagal Menyimpan Data',
@@ -338,7 +336,7 @@ function Sppd() {
         }
     }
 
-    const createProgramKegiatanForAnggaran = async() => {
+    const createProgramKegiatanForAnggaran = async () => {
         const total = 0
         let datas = {
             kode_blud,
@@ -346,6 +344,7 @@ function Sppd() {
             kode_kegiatan,
             tahun_anggaran,
             sumber_dana,
+            tanggaldikeluarkan,
             total
         }
         const apiurl = 'createprogramanggaran'
@@ -370,7 +369,7 @@ function Sppd() {
                 icon: <CloseCircleOutlined style={{ color: '#e84118' }} />,
             });
         }
-        
+
     }
 
     const removeAnggaran = async (kd) => {
@@ -381,7 +380,7 @@ function Sppd() {
             tahun_anggaran,
         }
         const hapus = await getallpost(datas, url)
-        getAnggaranbyBlud(kode_blud, localStorage.getItem('tahun'),kode_program, kode_kegiatan)
+        getAnggaranbyBlud(kode_blud, localStorage.getItem('tahun'), kode_program, kode_kegiatan)
         notification.open({
             message: 'Data Berhasil dihapus',
             description:
@@ -411,8 +410,8 @@ function Sppd() {
     }
 
     const resetForm = async () => {
-       
-       
+
+
     }
 
 
@@ -446,7 +445,7 @@ function Sppd() {
             editable: true,
             render: (text, record) => (
                 <span>
-                   <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight:'bold' }} value={record.total} />
+                    <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight: 'bold' }} value={record.total} />
                 </span>
             ),
         },
@@ -459,9 +458,9 @@ function Sppd() {
                         if (isTutup === '0') {
                             return (<Button type="danger" disabled> Penginputan nggaran ditutup </Button>)
                         } else {
-                            if( record.kode_akun === '' || record.kode_kelompok === '' || record.kode_jenis ==='' || record.kode_objek === '' || record.kode_rincian_objek === ''   ){
+                            if (record.kode_akun === '' || record.kode_kelompok === '' || record.kode_jenis === '' || record.kode_objek === '' || record.kode_rincian_objek === '') {
                                 return (<></>)
-                            }else{
+                            } else {
                                 return (<Button key="add_rincian" type="primary" onClick={() => browserHistory.push({ pathname: '/rincian', state: { kode_blud: text.kode_blud, kode_rekening: text.kode_rekening, tahun_anggaran: text.tahun_anggaran, id_kode_rekening: text.id_kode_rekening } })} icon={<ShoppingCartOutlined />} >Input / Edit Rincian</Button>)
                             }
                         }
@@ -518,7 +517,7 @@ function Sppd() {
             key: 'action',
             render: (text, record) => (
                 <span>
-                   <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight:'bold' }} value={record.total} />
+                    <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight: 'bold' }} value={record.total} />
                 </span>
             ),
         },
@@ -527,11 +526,11 @@ function Sppd() {
             key: 'action',
             render: (text, record) => (
                 <span>
-                    <Button key="inputkoderekening" onClick={() => anggaranByProgram(record.kode_blud ,record.kode_program, record.kode_kegiatan)} type="primary" style={{ marginRight: 10 }} icon={<DollarCircleOutlined />} >Input Kode Rekening</Button>
-                    <Button key="printrba" onClick={() => paramforptint(record.kode_blud ,record.kode_program, record.kode_kegiatan)} style={{ marginRight: 10, backgroundColor: '#2ecc71', color: 'white' }} icon={<PrinterOutlined />} >Print RBA</Button>
+                    <Button key="inputkoderekening" onClick={() => anggaranByProgram(record.kode_blud, record.kode_program, record.kode_kegiatan)} type="primary" style={{ marginRight: 10 }} icon={<DollarCircleOutlined />} >Input Kode Rekening</Button>
+                    <Button key="printrba" onClick={() => paramforptint(record.kode_blud, record.kode_program, record.kode_kegiatan)} style={{ marginRight: 10, backgroundColor: '#2ecc71', color: 'white' }} icon={<PrinterOutlined />} >Print RBA</Button>
                     <Popconfirm
                         title="Anda yakin menghapus Data ini?"
-                        onConfirm={() => removeProgram(record.kode_blud ,record.kode_program, record.kode_kegiatan,localStorage.getItem('tahun'))}
+                        onConfirm={() => removeProgram(record.kode_blud, record.kode_program, record.kode_kegiatan, localStorage.getItem('tahun'))}
                         // onCancel={cancel}
                         okText="Yes"
                         cancelText="No"
@@ -545,11 +544,11 @@ function Sppd() {
 
 
     const onChangeKodeRekening = async (value) => {
-      setKodeRekening(value)
-      setIdKodeRekening(value)
+        setKodeRekening(value)
+        setIdKodeRekening(value)
     }
 
-   
+
     const onChangeProgram = async (value) => {
         setProgram(value)
         getkegiatanbyprogram(value)
@@ -562,6 +561,12 @@ function Sppd() {
     const onChangeSumberDana = async (value) => {
         setSumberDana(value)
     }
+
+    const onChangeTanggalDikeluarkan = (value, string) => {
+        console.log(string)
+        setTanggalDikeluarkan(string)
+    }
+
 
     const dateFormat = 'YYYY-MM-DD';
     return (
@@ -594,19 +599,19 @@ function Sppd() {
                 <Row style={{ width: '100%' }}>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8} style={{ padding: 5 }}>
                         <div style={{ borderWidth: 1, borderColor: '#535c68', border: '1px solid #b2bec3', padding: 10, borderRadius: 5, textAlign: 'right' }}>
-                            <span style={{fontSize: 24, fontWeight: 'bold'}}>Rp <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight:'bold' }} value={pagu} /></span>
+                            <span style={{ fontSize: 24, fontWeight: 'bold' }}>Rp <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight: 'bold' }} value={pagu} /></span>
                             <Label>Total Pagu Tahun Anggaran {localStorage.getItem('tahun')}</Label>
                         </div>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8} style={{ padding: 5 }}>
                         <div style={{ borderWidth: 1, borderColor: '#535c68', border: '1px solid #b2bec3', padding: 10, borderRadius: 5, textAlign: 'right' }}>
-                        <span style={{fontSize: 24, fontWeight: 'bold'}}>Rp <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight:'bold' }} value={realisasi} /></span>
+                            <span style={{ fontSize: 24, fontWeight: 'bold' }}>Rp <NumberFormat thousandSeparator={true} displayType={'text'} style={{ fontWeight: 'bold' }} value={realisasi} /></span>
                             <Label>RBA Tahun Anggaran {localStorage.getItem('tahun')}</Label>
                         </div>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8} style={{ padding: 5 }}>
                         <div style={{ borderWidth: 1, borderColor: '#535c68', border: '1px solid #b2bec3', padding: 10, borderRadius: 5, textAlign: 'right' }}>
-                            <span style={{fontSize: 24, fontWeight: 'bold'}}>{Number.parseFloat(realisasipersen).toFixed(2)}  %</span>
+                            <span style={{ fontSize: 24, fontWeight: 'bold' }}>{Number.parseFloat(realisasipersen).toFixed(2)}  %</span>
                             <Label>RBA Tahun Anggaran {localStorage.getItem('tahun')} (%)</Label>
                         </div>
                     </Col>
@@ -665,7 +670,7 @@ function Sppd() {
                 <InputBoxCenter style={{ backgroundColor: '#3498db', color: 'white' }}>
                     <Label>Sumber Dana</Label>
                 </InputBoxCenter>
-                <InputBoxBottom>
+                <InputBoxCenter>
                     <Row style={{ width: "100%" }}>
                         <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                             <Label>Sumber dana</Label>
@@ -684,6 +689,16 @@ function Sppd() {
                             </Select>
                         </Col>
                     </Row>
+                </InputBoxCenter>
+                <InputBoxCenter style={{ backgroundColor: '#3498db', color: 'white' }}>
+                    <Label>Dikeluarkan pada tanggal</Label>
+                </InputBoxCenter>
+                <InputBoxBottom>
+                    <DatePicker
+                        //defaultValue={[moment(tanggaldikeluarkan, dateFormat)]}
+                        onChange={onChangeTanggalDikeluarkan}
+                        style={{ width: '100%', borderWidth: 0 }}
+                    />
                 </InputBoxBottom>
             </Modal>
 
@@ -700,31 +715,31 @@ function Sppd() {
 
                 <Row style={{ width: '100%', marginBottom: 20, backgroundColor: '#0984e3' }} >
                     <Col xs={24} sm={24} md={24} lg={12} xl={12} style={{ padding: 10 }}>
-                    <Label style={{ color: 'white' }}>Kode Rekening</Label>
-                            <Select
-                                showSearch
-                                style={{ width: '100%' }}
-                                placeholder="Pilih Kode Akun"
-                                optionFilterProp="children"
-                                onChange={onChangeKodeRekening}
-                            //value={format_nomor}
-                            >
-                                <Option value="">Pilih Kode Rekening</Option>
-                                {listKodeRekening.map((data, index) =>
-                                    <Option value={data.id_kode_rekening}><b>{data.kode_akun}{data.kode_kelompok}{data.kode_jenis}{data.kode_objek}{data.kode_rincian_objek} - {data.deskripsi_final} </b> </Option>
-                                )}
-                            </Select>
+                        <Label style={{ color: 'white' }}>Kode Rekening</Label>
+                        <Select
+                            showSearch
+                            style={{ width: '100%' }}
+                            placeholder="Pilih Kode Akun"
+                            optionFilterProp="children"
+                            onChange={onChangeKodeRekening}
+                        //value={format_nomor}
+                        >
+                            <Option value="">Pilih Kode Rekening</Option>
+                            {listKodeRekening.map((data, index) =>
+                                <Option value={data.id_kode_rekening}><b>{data.kode_akun}{data.kode_kelompok}{data.kode_jenis}{data.kode_objek}{data.kode_rincian_objek} - {data.deskripsi_final} </b> </Option>
+                            )}
+                        </Select>
                     </Col>
                     <Col xs={24} sm={24} md={24} lg={12} xl={12} style={{ padding: 10 }}>
-                    <Label style={{ color: 'white' }}>Anggaran</Label>
-                          <InputNumber
-                                defaultValue={100000}
-                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={value => value.replace(/\$\s?|(,*)/g, '')}
-                                style={{ width: '100%' }}
-                                value={total}
-                                onChange={value => setTotal(value)}
-                            />
+                        <Label style={{ color: 'white' }}>Anggaran</Label>
+                        <InputNumber
+                            defaultValue={100000}
+                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                            style={{ width: '100%' }}
+                            value={total}
+                            onChange={value => setTotal(value)}
+                        />
                     </Col>
                     <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{ padding: 10 }}>
                         <Button block type="primary" onClick={createAnggaran}> Simpan</Button>
@@ -759,7 +774,7 @@ function Sppd() {
                 <ReactToPrint
                     trigger={() => <Button block type="primary" icon={<PrinterOutlined />}>Print</Button>}
                     content={() => componentRef.current}
-                   
+
                 />
 
             </Modal>
