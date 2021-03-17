@@ -108,13 +108,6 @@ function Sppd() {
     const [modalAnggaran, setModalAnggaran] = useState(false)
     const [modalPrintRBA, setModalPrintRBA] = useState(false)
 
-    const [item_1, setItem1] = useState('')
-    const [item_2, setItem2] = useState('')
-    const [item_3, setItem3] = useState('')
-    const [item_4, setItem4] = useState('')
-    const [item_5, setItem5] = useState('')
-    const [judul, setJudul] = useState('')
-
     const [kode_rekening, setKodeRekening] = useState('')
     const [kode_blud, setKodeBlud] = useState('')
     const [id_kode_rekening, setIdKodeRekening] = useState('')
@@ -132,10 +125,6 @@ function Sppd() {
     const [realisasipersen, setRealisasiPersen] = useState('')
 
     const [listKodeRekening, setListKodeRekening] = useState([])
-    const [listKelompok, setListKelompok] = useState([])
-    const [listjenis, setListJenis] = useState([])
-    const [listObjek, setListObjek] = useState([])
-    const [listRincianObjek, setRincianListObjek] = useState([])
     const [liastAnggaran, setListAnggaran] = useState([])
     const [listProgramAnggaran, setListProgramAnggaran] = useState([])
 
@@ -227,6 +216,8 @@ function Sppd() {
         for (let i = 0; i < data_length; i++) {
             data.push({
                 no: i + 1,
+                kode_program: anggaran.anggaran[i].kode_program,
+                kode_kegiatan: anggaran.anggaran[i].kode_kegiatan,
                 kode_rekening: anggaran.anggaran[i].kode_rekening,
                 kode_blud: anggaran.anggaran[i].kode_blud,
                 id_kode_rekening: anggaran.anggaran[i].id_kode_rekening,
@@ -372,10 +363,12 @@ function Sppd() {
 
     }
 
-    const removeAnggaran = async (kd) => {
+    const removeAnggaran = async (kd, kd_program, kd_kegiatan) => {
         const url = 'deleteanggaran2'
         let datas = {
             kode_blud,
+            kode_program: kd_program,
+            kode_kegiatan: kd_kegiatan,
             kode_rekening: kd,
             tahun_anggaran,
         }
@@ -461,7 +454,7 @@ function Sppd() {
                             if (record.kode_akun === '' || record.kode_kelompok === '' || record.kode_jenis === '' || record.kode_objek === '' || record.kode_rincian_objek === '') {
                                 return (<></>)
                             } else {
-                                return (<Button key="add_rincian" type="primary" onClick={() => browserHistory.push({ pathname: '/rincian', state: { kode_blud: text.kode_blud, kode_rekening: text.kode_rekening, tahun_anggaran: text.tahun_anggaran, id_kode_rekening: text.id_kode_rekening } })} icon={<ShoppingCartOutlined />} >Input / Edit Rincian</Button>)
+                                return (<Button key="add_rincian" type="primary" onClick={() => browserHistory.push({ pathname: '/rincian', state: { kode_program: text.kode_program, kode_kegiatan: text.kode_kegiatan, kode_blud: text.kode_blud, kode_rekening: text.kode_rekening, tahun_anggaran: text.tahun_anggaran, id_kode_rekening: text.id_kode_rekening } })} icon={<ShoppingCartOutlined />} >Input / Edit Rincian</Button>)
                             }
                         }
                     }

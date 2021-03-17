@@ -117,12 +117,16 @@ function Kurir(props) {
         const jumlahX = await parseInt(volume) * parseInt(harga_satuan)
         await setJumlah(jumlahX)
         setTotal(total + jumlah)
+        const kode_program = props.location.state.kode_program
+        const kode_kegiatan = props.location.state.kode_kegiatan
         const kode_blud = props.location.state.kode_blud
         const kode_rekening = props.location.state.kode_rekening
         const tahun_anggaran = props.location.state.tahun_anggaran
         const id_kode_rekening = props.location.state.id_kode_rekening
         let datas = {
             kode_blud,
+            kode_program,
+            kode_kegiatan,
             id_kode_rekening,
             kode_rekening,
             tahun_anggaran,

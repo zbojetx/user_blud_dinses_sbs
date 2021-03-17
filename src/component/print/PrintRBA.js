@@ -37,7 +37,8 @@ export class ComponentToPrint extends React.Component {
             rincian: [],
             kepala: [],
             verifikator: [],
-            ext: []
+            ext: [],
+            total: []
         };
 
     }
@@ -67,13 +68,14 @@ export class ComponentToPrint extends React.Component {
             rincian: datatoprint.rincian,
             kepala: datatoprint.kepaladinas[0],
             ext: datatoprint.other[0],
+            total: datatoprint.total[0],
             verifikator: datatoprint.verifikator
         })
     }
 
 
     render() {
-        const { blud, program, kegiatan, anggaran, rincian, kepala, verifikator, ext } = this.state
+        const { blud, program, kegiatan, anggaran, rincian, kepala, verifikator, ext, total } = this.state
         return (
             <table style={{ width: '100%', fontSize: 12, color: 'black' }}>
                 <table style={{ width: '100%', marginBottom: 10 }}>
@@ -202,7 +204,7 @@ export class ComponentToPrint extends React.Component {
                     <tfoot style={{ width: '100%', borderTop: '1px solid black', borderBottom: '1px solid black', fontWeight: 'bold' }}>
                         <tr>
                             <td colSpan={5}><center><b>JUMLAH</b></center></td>
-                            <td style={{ textAlign: 'right' }}><NumberFormat thousandSeparator={true} displayType={'text'} value={ext.total} /></td>
+                            <td style={{ textAlign: 'right', fontWeight:'bold', fontSize:14 }}><NumberFormat thousandSeparator={true} displayType={'text'} value={total.total} /></td>
                         </tr>
                     </tfoot>
                 </table>
