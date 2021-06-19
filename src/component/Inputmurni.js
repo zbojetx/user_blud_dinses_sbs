@@ -338,6 +338,7 @@ function Sppd() {
             tanggaldikeluarkan,
             total
         }
+        console.log(datas)
         const apiurl = 'createprogramanggaran'
         console.log(apiurl)
         let createprogramanggaran = await createupdate(datas, apiurl)

@@ -151,7 +151,7 @@ export class ComponentToPrint extends React.Component {
                         <tr>
                             <td>Masukan</td>
                             <td>dana yang tersedia</td>
-                            <td></td>
+                            <td>Rp <NumberFormat thousandSeparator={true} displayType={'text'} value={total.total} /></td>
                         </tr>
                         <tr>
                             <td>Capaian Program</td>
